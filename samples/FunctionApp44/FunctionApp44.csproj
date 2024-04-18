@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <AzureFunctionsVersion>v4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -10,9 +10,9 @@
     </PropertyGroup>
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.21.0" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.2-local202404180724" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
-        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.0" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.4-local202404180724" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">
@@ -26,4 +26,14 @@
     <ItemGroup>
         <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
     </ItemGroup>
+
+    <Target Name="UpdateRuntimePack" AfterTargets="ResolveFrameworkReferences" Condition="'$(PublishAotUsingRuntimePack)' != 'true'">
+        <PropertyGroup>
+        <_LocalMicrosoftNetCoreAppRuntimePackDir>C:\dev\win-runtime\artifacts\bin\microsoft.netcore.app.runtime.win-x64\Release</_LocalMicrosoftNetCoreAppRuntimePackDir>
+        </PropertyGroup>
+        <ItemGroup>
+        <ResolvedRuntimePack PackageDirectory="$(_LocalMicrosoftNetCoreAppRuntimePackDir)" Condition="'$(_LocalMicrosoftNetCoreAppRuntimePackDir)' != '' and&#xD;&#xA;                                        '%(ResolvedRuntimePack.FrameworkName)' == 'Microsoft.NETCore.App'" />
+        </ItemGroup>
+        <Message Text="Used runtime pack: %(ResolvedRuntimePack.PackageDirectory)" Importance="high" />
+    </Target>
 </Project>

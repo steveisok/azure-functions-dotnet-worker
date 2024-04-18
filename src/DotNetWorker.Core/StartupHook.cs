@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Azure.Functions.Worker;
@@ -27,6 +28,7 @@ internal class StartupHook
     static readonly EventWaitHandle WaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset, "AzureFunctionsNetHostSpecializationWaitHandle");
 
     const string StartupHooksEnvVar = "DOTNET_STARTUP_HOOKS";
+    const string SpecializedEntryAssemblyEnvVar = "AZURE_FUNCTIONS_SPECIALIZED_ENTRY_ASSEMBLY";
     private static readonly string _startupSeparator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ";" : ":";
     private static readonly string? _assemblyName = typeof(StartupHook).Assembly.GetName().Name;
 
@@ -55,6 +57,17 @@ internal class StartupHook
         WorkerEventSource.Log.StartupHookWaitForSpecializationRequestStart();
         WaitHandle.WaitOne();
 
+        string? entryAssemblyName = Environment.GetEnvironmentVariable(SpecializedEntryAssemblyEnvVar);
+
+        if (string.IsNullOrEmpty(entryAssemblyName))
+        {
+            LogToStandardOutput($"Inside StartupHook.Initialize().buildConfiguration:{buildConfiguration} Exiting because AZURE_FUNCTIONS_SPECIALIZED_ENTRY_ASSEMBLY env variable is empty.");
+            return;
+        }
+
+        Assembly specializedEntryAssembly = Assembly.LoadFrom(entryAssemblyName);
+        Assembly.SetEntryAssembly(specializedEntryAssembly);
+
         WorkerEventSource.Log.StartupHookReceivedContinueExecutionSignalFromFunctionsNetHost();
 
         // Below code is only for IDE debugging. 
@@ -62,7 +75,9 @@ internal class StartupHook
         const int SleepTime = 500;
         const int MaxWaitCycles = (60 * 1000) / SleepTime;
 
+        // Not sure this is necessary.... Is this to drop out so that no other app with the same startup hook is called?
         RemoveSelfFromStartupHooks();
+
         string? debuggerWaitEnabled = Environment.GetEnvironmentVariable("FUNCTIONS_ENABLE_DEBUGGER_WAIT");
         string? jsonOutputEnabled = Environment.GetEnvironmentVariable("FUNCTIONS_ENABLE_JSON_OUTPUT");
 #if NET5_0_OR_GREATER
