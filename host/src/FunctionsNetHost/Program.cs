@@ -12,21 +12,31 @@ namespace FunctionsNetHost
         {
             try
             {
+                Console.WriteLine("HELLLO HOST!");
                 Logger.Log("Starting FunctionsNetHost0213");
 
                 var workerStartupOptions = await GetStartupOptionsFromCmdLineArgs(args);
 
                 var executableDir = Path.GetDirectoryName(args[0])!;
+
+                if (string.IsNullOrEmpty(executableDir))
+                {
+                    executableDir = "C:\\dev\\functions\\ArtifactsForProfileCollection\\FunctionsHookPreJit";
+                }
+
+                Logger.Log("Executable DIR: " + executableDir);
+
                 AssemblyPreloader.Preload(executableDir);
 
                 var preJitFilePath = Path.Combine(executableDir, "PreJit", "coldstart.jittrace");
                 var exist = File.Exists(preJitFilePath);
                 Logger.Log($"{preJitFilePath} exist: {exist}");
 
-                EnvironmentUtils.SetValue(EnvironmentVariables.PreJitFilePath, preJitFilePath);
-                EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, "Microsoft.Azure.Functions.Worker.Core");
+                var dummyAppEntryPoint = Path.Combine(executableDir, "HookApp", "HookApp.dll");
 
-                var dummyAppEntryPoint = Path.Combine(executableDir, "FunctionApp44", "FunctionApp44.dll");
+                EnvironmentUtils.SetValue(EnvironmentVariables.PreJitFilePath, preJitFilePath);
+                EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, dummyAppEntryPoint);
+
                 if (!File.Exists(dummyAppEntryPoint))
                 {
                     Logger.Log($"Dummy app entry point not found: {dummyAppEntryPoint}");
@@ -45,7 +55,7 @@ namespace FunctionsNetHost
             }
             catch (Exception exception)
             {
-                Logger.Log($"An error occurred while running FunctionsNetHost.{exception}");
+                Logger.Log($"An error occurred while running FunctionsNetHost \n\n {exception.ToString()}");
             }
         }
 
