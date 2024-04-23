@@ -5,6 +5,9 @@
     [Parameter(Mandatory=$false)]
     [Switch]
     $SkipBuildOnPack,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $PatchedDotnet = "dotnet",
     [Parameter(Mandatory=$false)]
     [string[]]
     $AdditionalPackArgs = @()
@@ -40,15 +43,15 @@ if (!(Test-Path $localPack))
 Write-Host
 Write-Host "---Updating project with local SDK pack---"
 Write-Host "Packing Core .NET Worker projects to $localPack"
-& "dotnet" "pack" $sdkProject "-p:PackageOutputPath=$localPack" "-nologo" "-p:BuildNumber=$buildNumber" $AdditionalPackArgs
+& $PatchedDotnet "pack" $sdkProject "-p:PackageOutputPath=$localPack" "-nologo" "-p:BuildNumber=$buildNumber" $AdditionalPackArgs
 Write-Host
 
 Write-Host "Removing SDK package reference in $project"
-& "dotnet" "remove" $project "package" "Microsoft.Azure.Functions.Worker.Sdk"
+& $PatchedDotnet "remove" $project "package" "Microsoft.Azure.Functions.Worker.Sdk"
 Write-Host
 
 Write-Host "Removing Worker package reference in $project"
-& "dotnet" "remove" $project "package" "Microsoft.Azure.Functions.Worker"
+& $PatchedDotnet "remove" $project "package" "Microsoft.Azure.Functions.Worker"
 Write-Host
 
 Write-Host "Finding latest local Worker package in $localPack"
@@ -58,7 +61,7 @@ Write-Host "Found $version"
 Write-Host
 
 Write-Host "Adding Worker package version $version to $project"
-& "dotnet" "add" $project "package" "Microsoft.Azure.Functions.Worker" "-v" $version "-s" $localPack "-n"
+& $PatchedDotnet "add" $project "package" "Microsoft.Azure.Functions.Worker" "-v" $version "-s" $localPack "-n"
 Write-Host
 
 Write-Host "Finding latest local SDK package in $localPack"
@@ -67,13 +70,13 @@ $version = $package.Version
 Write-Host "Found $version"
 Write-Host
 Write-Host "Adding SDK package version $version to $project"
-& "dotnet" "add" $project "package" "Microsoft.Azure.Functions.Worker.Sdk" "-v" $version "-s" $localPack "-n"
+& $PatchedDotnet "add" $project "package" "Microsoft.Azure.Functions.Worker.Sdk" "-v" $version "-s" $localPack "-n"
 Write-Host
 $configFile = Split-Path "$project"
 $configFile += "/NuGet.Config"
 Write-Host "Config file name" $configFile
-& "dotnet" "nuget" "add" "source" $localPack "--name" "local" "--configfile" "$configFile"
+& $PatchedDotnet "nuget" "add" "source" $localPack "--name" "local" "--configfile" "$configFile"
 Write-Host "Building $project"
 
-& "dotnet" "build" $project "-nologo" "-p:TestBuild=true"
+& $PatchedDotnet "build" $project "-nologo" "-p:TestBuild=true"
 Write-Host "------"
