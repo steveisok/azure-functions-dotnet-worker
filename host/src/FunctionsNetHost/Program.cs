@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using System;
 using System.CommandLine;
 using FunctionsNetHost.Grpc;
 
@@ -12,11 +13,21 @@ namespace FunctionsNetHost
         {
             try
             {
+                Logger.Log("\nHello From Host!\n");
                 Logger.Log($"Starting FunctionsNetHost");
-
+                
                 var workerStartupOptions = await GetStartupOptionsFromCmdLineArgs(args);
 
                 var executableDir = Path.GetDirectoryName(args[0])!;
+
+                if (string.IsNullOrEmpty(executableDir))
+                {
+                    string fallbackDir = "<Fallback directory goes here>";
+                    Console.WriteLine("Executable Dir was null. Setting it to"
+                                      + $" {fallbackDir}...");
+                }
+
+                Logger.Log($"Executable Dir Value: {executableDir}");
                 AssemblyPreloader.Preload(executableDir);
 
                 var preJitFilePath = Path.Combine(executableDir, "PreJit", "coldstart.jittrace");
@@ -26,7 +37,7 @@ namespace FunctionsNetHost
                 EnvironmentUtils.SetValue(EnvironmentVariables.PreJitFilePath, preJitFilePath);
                 EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, "Microsoft.Azure.Functions.Worker.Core");
 
-                var dummyAppEntryPoint = Path.Combine(executableDir, "FunctionApp44", "FunctionApp44.dll");
+                var dummyAppEntryPoint = Path.Combine(executableDir, "<Hook app path>", "<Hook app dir>");
 
                 if (!File.Exists(dummyAppEntryPoint))
                 {
@@ -37,14 +48,15 @@ namespace FunctionsNetHost
                 EnvironmentUtils.SetValue(EnvironmentVariables.AppEntryPoint, dummyAppEntryPoint);
 
                 using var appLoader = new AppLoader();
-                _ = Task.Run(() => appLoader.RunApplication(dummyAppEntryPoint));
-                var grpcClient = new GrpcClient(workerStartupOptions, appLoader);
 
+                _ = Task.Run(() => appLoader.RunApplication(dummyAppEntryPoint));
+
+                var grpcClient = new GrpcClient(workerStartupOptions, appLoader);
                 await grpcClient.InitAsync();
             }
             catch (Exception exception)
             {
-                Logger.Log($"An error occurred while running FunctionsNetHost.{exception}");
+                Logger.Log($"An error occurred while running FunctionsNetHost:\n\n{exception}");
             }
         }
 
