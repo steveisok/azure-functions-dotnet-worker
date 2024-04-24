@@ -120,6 +120,10 @@ namespace FunctionsNetHost.Grpc
                 {
                     Logger.Log($"Received message from function app. Type:{outboundMessage.ContentCase}");
                 }
+                else
+                {
+                    Logger.LogTrace($"RPC LOG: {outboundMessage.RpcLog.Message}");
+                }
 
                 // For our tests, we will issue only one invocation request(cold start request)
                 if (outboundMessage.ContentCase == StreamingMessage.ContentOneofCase.InvocationResponse)

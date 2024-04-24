@@ -1,29 +1,32 @@
-﻿using System.Net;
-using Microsoft.Azure.Functions.Worker;
+﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace FunctionApp44
+namespace HelloHttp
 {
     public class HelloHttp
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<HelloHttp> _logger;
 
-        public HelloHttp(ILoggerFactory loggerFactory)
+        public HelloHttp(ILogger<HelloHttp> logger)
         {
-            _logger = loggerFactory.CreateLogger<HelloHttp>();
+            _logger = logger;
         }
 
         [Function("HelloHttp")]
         public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            var buildConfiguration = string.Empty;
+#if DEBUG
+            buildConfiguration = "Debug";
+#else
+        buildConfiguration = "Release";
+#endif
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+            _logger.LogInformation($"C# HTTP trigger function processed a request.buildConfiguration:{buildConfiguration}");
 
-            response.WriteString("Welcome to Azure Functions!");
-
+            var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            response.WriteString($"Hello World!");
             return response;
         }
     }

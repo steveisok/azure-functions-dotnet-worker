@@ -30,6 +30,7 @@ namespace FunctionsNetHost.Grpc
         private async Task Process(StreamingMessage msg)
         {
             Logger.Log($"Received message from functions host runtime. Type:{msg.ContentCase}");
+
             if (_specializationDone)
             {
                 // For our tests, we will issue only one invocation request(cold start request)
