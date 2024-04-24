@@ -53,19 +53,21 @@ internal class StartupHook
         {
             LogToStandardOutput($"Can't set new entry assembly. {e.ToString()}");
         }
+
+        Assembly tempAssembly = Assembly.GetEntryAssembly();
+        LogToStandardOutput($"New entry assembly is {tempAssembly.FullName}.");
     }
 
     static string logPrefix = "LanguageWorkerConsoleLog";
     private static void LogToStandardOutput(string message)
     {
-        string? path = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_LOGFILE_PATH");
+        string? path = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_WORKER_LOGFILE_PATH");
 
         if (!string.IsNullOrEmpty(path))
         {
-            File.AppendAllText(path, message + Environment.NewLine);
+            File.AppendAllTextAsync(path, message + Environment.NewLine);
         }
         Console.WriteLine($"{logPrefix} {message}");
-
     }
 
     private static void PreJitPrepare(string filePath)

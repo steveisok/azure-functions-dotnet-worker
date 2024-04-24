@@ -37,7 +37,7 @@ namespace FunctionsNetHost
 
             try
             {
-                File.AppendAllText(logFilePath, $"{Environment.NewLine}Starting new session at {DateTime.Now}{Environment.NewLine}{Environment.NewLine}");
+                File.AppendAllTextAsync(logFilePath, $"{Environment.NewLine}Starting new session at {DateTime.Now}{Environment.NewLine}{Environment.NewLine}");
                 _logFilePath = logFilePath;
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace FunctionsNetHost
 
             try
             {
-                File.AppendAllText(_logFilePath, $"{logMessage}{Environment.NewLine}");
+                File.AppendAllTextAsync(_logFilePath, $"{logMessage}{Environment.NewLine}");
             }
             catch (Exception ex)
             {

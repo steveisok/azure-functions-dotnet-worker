@@ -9,9 +9,9 @@
     </PropertyGroup>
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.2-local202404221055" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.2-local202404232023" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
-        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.4-local202404221055" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.4-local202404232023" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">

@@ -28,7 +28,7 @@ namespace FunctionsNetHost.Grpc
 
         private async Task Process(StreamingMessage msg)
         {
-            Logger.Log($"Processing new message.{msg.ContentCase}");
+            Logger.Log($"Received message from functions host runtime. Type:{msg.ContentCase}");
 
             if (_specializationDone)
             {
