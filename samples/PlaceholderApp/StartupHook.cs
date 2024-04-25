@@ -5,8 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Azure.Functions.Worker;
 
-using GetEnvironmentVariable = Environment.GetEnvironmentVariable;
-using NewLine = Environment.NewLine;
+using SysEnv = System.Environment;
 
 internal class StartupHook
 {
@@ -23,9 +22,9 @@ internal class StartupHook
 
     public static void Initialize()
     {
-        LogMessage($"{NewLine}Startup Hook Called!{NewLine}");
+        LogMessage($"{SysEnv.NewLine}Startup Hook Called!{SysEnv.NewLine}");
 
-        string jitTraceFile = GetEnvironmentVariable(PrejitFileEnvVar);
+        string jitTraceFile = SysEnv.GetEnvironmentVariable(PrejitFileEnvVar);
 
         if (!string.IsNullOrWhiteSpace(jitTraceFile))
         {
@@ -39,16 +38,16 @@ internal class StartupHook
                        + " non-prejitting version of the scenario.");
         }
 
-        LogMessage("{NewLine}Now waiting for Specialization Mode signal...");
-        WaitHandle.WaitOne();
+        LogMessage("{SysEnv.NewLine}Now waiting for Specialization Mode signal...");
+        s_waitHandle.WaitOne();
         LogMessage("Specialization Mode signal received!");
 
-        string specEntryAsmName = GetEnvironmentVariable(SpecEntryAssemblyEnvVar);
+        string specEntryAsmName = SysEnv.GetEnvironmentVariable(SpecEntryAssemblyEnvVar);
 
         if (string.IsNullOrWhiteSpace(specEntryAsmName))
         {
             LogMessage("Received a signal but the new specialized entry assembly"
-                       + $" was empty. Exiting...{NewLine}");
+                       + $" was empty. Exiting...{SysEnv.NewLine}");
             return ;
         }
 
@@ -63,12 +62,12 @@ internal class StartupHook
 
     private static void LogMessage(string message)
     {
-        string logFile = GetEnvironmentVariable(WorkerLogFileEnvVar);
+        string logFile = SysEnv.GetEnvironmentVariable(WorkerLogFileEnvVar);
 
         if (string.IsNullOrWhiteSpace(logFile))
             Console.WriteLine($"STARTUP CONSOLE: {message}");
         else
-            File.AppendAllTextAsync(logFile, $"{message}{NewLine}");
+            File.AppendAllTextAsync(logFile, $"{message}{SysEnv.NewLine}");
     }
 
     private static void PreJitPrepare(string jitTraceFile)

@@ -37,7 +37,7 @@ namespace FunctionsNetHost
                 EnvironmentUtils.SetValue(EnvironmentVariables.PreJitFilePath, preJitFilePath);
                 EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, "Microsoft.Azure.Functions.Worker.Core");
 
-                var dummyAppEntryPoint = Path.Combine(executableDir, "<Hook app path>", "<Hook app dir>");
+                var dummyAppEntryPoint = Path.Combine(executableDir, "PlaceholderApp", "PlaceholderApp.dll");
 
                 if (!File.Exists(dummyAppEntryPoint))
                 {
