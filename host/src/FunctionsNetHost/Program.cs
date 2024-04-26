@@ -45,7 +45,7 @@ namespace FunctionsNetHost
                                                      "StartupHook.dll");
 
                 EnvironmentUtils.SetValue(EnvironmentVariables.PreJitFilePath, preJitFilePath);
-                EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, dummyAppEntryPoint);
+                EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, startupHookApp);
 
                 if (!File.Exists(dummyAppEntryPoint))
                 {

@@ -35,15 +35,19 @@ namespace FunctionsNetHost
                 var hostfxrFullPath = "C:\\Development\\AzureFunctionsStuff\\TestOurs\\dotnet-sdk-nightly--preview3\\host\\fxr\\9.0.0-preview.3.24172.9\\hostfxr.dll";
                 Logger.Log($"hostfxr path:{hostfxrFullPath}");
 
+                Logger.Log("Before HostFxrLoadStart()");
                 AppLoaderEventSource.Log.HostFxrLoadStart(hostfxrFullPath);
+                Logger.Log("Before NativeLibrary.Load()");
                 _hostfxrHandle = NativeLibrary.Load(hostfxrFullPath);
 
+                Logger.Log("Before checking for IntPtr.Zero");
                 if (_hostfxrHandle == IntPtr.Zero)
                 {
                     Logger.Log($"Failed to load hostfxr. hostfxrFullPath:{hostfxrFullPath}");
                     return -1;
                 }
-                
+
+                Logger.Log("Before HostFxrLoadStop()");
                 AppLoaderEventSource.Log.HostFxrLoadStop();
                 Logger.LogTrace($"hostfxr loaded.");
 

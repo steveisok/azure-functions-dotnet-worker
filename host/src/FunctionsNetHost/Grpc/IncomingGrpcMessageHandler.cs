@@ -58,7 +58,6 @@ namespace FunctionsNetHost.Grpc
                 case StreamingMessage.ContentOneofCase.WorkerInitRequest:
                     {
                         responseMessage.WorkerInitResponse = BuildWorkerInitResponse();
-                        AppLoaderEventSource.Log.NetHostWorkerInitCompleted();
                         break;
                     }
                 case StreamingMessage.ContentOneofCase.FunctionsMetadataRequest:
@@ -136,21 +135,6 @@ namespace FunctionsNetHost.Grpc
             }
         }
 
-        private static FunctionEnvironmentReloadResponse BuildFailedEnvironmentReloadResponse(Exception? exception = null)
-        {
-            var response = new FunctionEnvironmentReloadResponse
-            {
-                Result = new StatusResult
-                {
-                    Status = StatusResult.Types.Status.Failure
-                }
-            };
-
-            response.Result.Exception = ToUserRpcException(exception);
-
-            return response;
-        }
-
         internal static RpcException? ToUserRpcException(Exception? exception)
         {
             if (exception is null)
@@ -167,6 +151,22 @@ namespace FunctionsNetHost.Grpc
                 IsUserException = true
             };
         }
+
+        private static FunctionEnvironmentReloadResponse BuildFailedEnvironmentReloadResponse(Exception? exception = null)
+        {
+            var response = new FunctionEnvironmentReloadResponse
+            {
+                Result = new StatusResult
+                {
+                    Status = StatusResult.Types.Status.Failure
+                }
+            };
+
+            response.Result.Exception = ToUserRpcException(exception);
+
+            return response;
+        }
+
         private static FunctionMetadataResponse BuildFunctionMetadataResponse()
         {
             var metadataResponse = new FunctionMetadataResponse
