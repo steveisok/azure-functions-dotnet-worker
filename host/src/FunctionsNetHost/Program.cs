@@ -13,12 +13,12 @@ namespace FunctionsNetHost
         {
             try
             {
-                Logger.Log("\nHello From Host!\n");
-                Logger.Log($"Starting FunctionsNetHost");
+                Logger.Log("\nHello From Host!");
+                Logger.Log($"Starting FunctionsNetHost!");
                 
                 var workerStartupOptions = await GetStartupOptionsFromCmdLineArgs(args);
 
-                var executableDir = Path.GetDirectoryName(args[0])!;
+                string executableDir = Path.GetDirectoryName(args[0])!;
 
                 if (string.IsNullOrEmpty(executableDir))
                 {
@@ -30,14 +30,22 @@ namespace FunctionsNetHost
                 Logger.Log($"Executable Dir Value: {executableDir}");
                 AssemblyPreloader.Preload(executableDir);
 
-                var preJitFilePath = Path.Combine(executableDir, "PreJit", "coldstart.jittrace");
-                var exist = File.Exists(preJitFilePath);
-                Logger.Log($"{preJitFilePath} exist: {exist}");
+                string preJitFilePath = Path.Combine(executableDir,
+                                                     "PreJit",
+                                                     "coldstart.jittrace");
+
+                Logger.Log($"{preJitFilePath} exist: {File.Exists(preJitFilePath)}");
+
+                string dummyAppEntryPoint = Path.Combine(executableDir,
+                                                         "PlaceholderApp",
+                                                         "PlaceholderApp.dll");
+
+                string startupHookApp = Path.Combine(executableDir,
+                                                     "StartupHook",
+                                                     "StartupHook.dll");
 
                 EnvironmentUtils.SetValue(EnvironmentVariables.PreJitFilePath, preJitFilePath);
-                EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, "Microsoft.Azure.Functions.Worker.Core");
-
-                var dummyAppEntryPoint = Path.Combine(executableDir, "PlaceholderApp", "PlaceholderApp.dll");
+                EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, dummyAppEntryPoint);
 
                 if (!File.Exists(dummyAppEntryPoint))
                 {
@@ -51,7 +59,7 @@ namespace FunctionsNetHost
 
                 _ = Task.Run(() => appLoader.RunApplication(dummyAppEntryPoint));
 
-                var grpcClient = new GrpcClient(workerStartupOptions, appLoader);
+                GrpcClient grpcClient = new GrpcClient(workerStartupOptions, appLoader);
                 await grpcClient.InitAsync();
             }
             catch (Exception exception)

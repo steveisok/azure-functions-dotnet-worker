@@ -9,7 +9,6 @@ namespace FunctionsNetHost.Grpc
 {
     internal sealed class IncomingGrpcMessageHandler
     {
-        private const string WorkerStartupHookAssemblyName = "Microsoft.Azure.Functions.Worker.Core";
         private bool _specializationDone;
         private readonly AppLoader _appLoader;
         private readonly GrpcWorkerStartupOptions _grpcWorkerStartupOptions;
@@ -80,8 +79,8 @@ namespace FunctionsNetHost.Grpc
                     }
                 case StreamingMessage.ContentOneofCase.FunctionEnvironmentReloadRequest:
 
-                    Logger.LogTrace("Specialization request received.");
                     AppLoaderEventSource.Log.SpecializationRequestReceived();
+                    Logger.LogTrace("Specialization request received.");
 
                     var envReloadRequest = msg.FunctionEnvironmentReloadRequest;
 
@@ -111,22 +110,15 @@ namespace FunctionsNetHost.Grpc
                         EnvironmentUtils.SetValue(kv.Key, kv.Value);
                     }
 
-                    EnvironmentUtils.SetValue(EnvironmentVariables.DotnetStartupHooks, WorkerStartupHookAssemblyName);
-
-                    EnvironmentUtils.SetValue(EnvironmentVariables.HostEndpoint, _grpcWorkerStartupOptions.ServerUri.ToString());
-
-#pragma warning disable CS4014
-                    Task.Run(() =>
-#pragma warning restore CS4014
-                    {
-                        _ = _appLoader.RunApplication(applicationExePath);
-                    });
+                    EnvironmentUtils.SetValue("AZURE_FUNCTIONS_SPECIALIZED_ENTRY_ASSEMBLY", applicationExePath);
+                    SpecializationSyncManager.WaitHandle.Set();
 
                     Logger.LogTrace($"Will wait for worker loaded signal.");
                     WorkerLoadStatusSignalManager.Instance.Signal.WaitOne();
 
                     AppLoaderEventSource.Log.ApplicationMainStartedSignalReceived();
                     var logMessage = $"FunctionApp assembly loaded successfully. ProcessId:{Environment.ProcessId}";
+
                     if (OperatingSystem.IsWindows())
                     {
                         logMessage += $", AppPoolId:{Environment.GetEnvironmentVariable(EnvironmentVariables.AppPoolId)}";

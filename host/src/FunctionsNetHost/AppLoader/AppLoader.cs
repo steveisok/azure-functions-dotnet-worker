@@ -32,7 +32,7 @@ namespace FunctionsNetHost
                     assembly_path = GetCharArrayPointer(assemblyPath)
                 };
 
-                var hostfxrFullPath = NetHost.GetHostFxrPath(&parameters);
+                var hostfxrFullPath = "C:\\Development\\AzureFunctionsStuff\\TestOurs\\dotnet-sdk-nightly--preview3\\host\\fxr\\9.0.0-preview.3.24172.9\\hostfxr.dll";
                 Logger.Log($"hostfxr path:{hostfxrFullPath}");
 
                 AppLoaderEventSource.Log.HostFxrLoadStart(hostfxrFullPath);
