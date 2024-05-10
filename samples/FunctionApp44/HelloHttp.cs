@@ -1,16 +1,17 @@
-﻿using Microsoft.Azure.Functions.Worker;
+﻿using System.Net;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace HelloHttp
 {
-    public class HelloHttp
+    public sealed class HelloHttp
     {
-        private readonly ILogger<HelloHttp> _logger;
+        private readonly ILogger _logger;
 
-        public HelloHttp(ILogger<HelloHttp> logger)
+        public HelloHttp(ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<HelloHttp>();
         }
 
         [Function("HelloHttp")]

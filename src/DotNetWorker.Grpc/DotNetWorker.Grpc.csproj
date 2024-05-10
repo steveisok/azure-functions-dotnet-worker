@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <PackageId>Microsoft.Azure.Functions.Worker.Grpc</PackageId>
     <Description>This library provides gRPC support for Azure Functions .NET Worker communication with the Azure Functions Host.</Description>
     <AssemblyName>Microsoft.Azure.Functions.Worker.Grpc</AssemblyName>

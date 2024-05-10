@@ -15,13 +15,14 @@ public class PlaceholderApp
         //                   + " and try again. Good luck!");
 
         Assembly entry = Assembly.GetEntryAssembly();
-        LogMessage($"Going to execute the entry assembly {entry.FullName}...");
+        //LogMessage($"Going to execute the entry assembly {entry.FullName}...");
 
         AppDomain thisDomain = AppDomain.CurrentDomain;
         int exitCode = thisDomain.ExecuteAssemblyByName(entry.GetName());
         return exitCode;
     }
 
+    /*
     private static void LogMessage(string message)
     {
         string logFile = GetEnvironmentVariable(WorkerLogFileEnvVar);
@@ -31,4 +32,5 @@ public class PlaceholderApp
         else
             File.AppendAllTextAsync(logFile, $"{message}{NewLine}");
     }
+    */
 }

@@ -77,9 +77,9 @@ namespace FunctionsNetHost.Grpc
                         break;
                     }
                 case StreamingMessage.ContentOneofCase.FunctionEnvironmentReloadRequest:
-
-                    AppLoaderEventSource.Log.SpecializationRequestReceived();
-                    Logger.LogTrace("Specialization request received.");
+                    
+                    //AppLoaderEventSource.Log.SpecializationRequestReceived();
+                    //Logger.LogTrace("Specialization request received.");
 
                     var envReloadRequest = msg.FunctionEnvironmentReloadRequest;
 
@@ -114,6 +114,9 @@ namespace FunctionsNetHost.Grpc
 
                     Logger.LogTrace($"Will wait for worker loaded signal.");
                     WorkerLoadStatusSignalManager.Instance.Signal.WaitOne();
+
+                    AppLoaderEventSource.Log.SpecializationRequestReceived();
+                    Logger.LogTrace("Specialization request received.");
 
                     AppLoaderEventSource.Log.ApplicationMainStartedSignalReceived();
                     var logMessage = $"FunctionApp assembly loaded successfully. ProcessId:{Environment.ProcessId}";

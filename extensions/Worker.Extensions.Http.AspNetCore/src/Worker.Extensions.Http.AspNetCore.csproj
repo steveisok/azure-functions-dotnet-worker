@@ -7,7 +7,7 @@
 
     <!--Version information-->
     <VersionPrefix>1.2.0</VersionPrefix>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="..\..\..\build\Extensions.props" />
