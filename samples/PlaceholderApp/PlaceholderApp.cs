@@ -14,15 +14,36 @@ public class PlaceholderApp
         //                   + " made a wrong turn along the way. Retrace your steps"
         //                   + " and try again. Good luck!");
 
-        Assembly entry = Assembly.GetEntryAssembly();
+        //Assembly entry = Assembly.GetEntryAssembly();
         //LogMessage($"Going to execute the entry assembly {entry.FullName}...");
 
-        AppDomain thisDomain = AppDomain.CurrentDomain;
-        int exitCode = thisDomain.ExecuteAssemblyByName(entry.GetName());
-        return exitCode;
+        string specEntryAsmName = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_SPECIALIZED_ENTRY_ASSEMBLY")!;
+
+        LogMessage($"Trying to load in placeholder main: {specEntryAsmName}");
+
+        if (string.IsNullOrWhiteSpace(specEntryAsmName))
+        {
+            return -1;
+        }
+
+
+        Assembly entry = Assembly.LoadFrom(specEntryAsmName);
+
+        try
+        {
+            LogMessage($"Before ExecuteAssembly");
+            AppDomain thisDomain = AppDomain.CurrentDomain;
+            int exitCode = thisDomain.ExecuteAssemblyByName(entry.GetName());
+            LogMessage("After ExecuteAssembly");
+            return exitCode;
+        }
+        catch(Exception ex)
+        {
+            LogMessage($"Error executing entry assembly: {ex.ToString()}");
+            return -1;
+        }
     }
 
-    /*
     private static void LogMessage(string message)
     {
         string logFile = GetEnvironmentVariable(WorkerLogFileEnvVar);
@@ -32,5 +53,4 @@ public class PlaceholderApp
         else
             File.AppendAllTextAsync(logFile, $"{message}{NewLine}");
     }
-    */
 }

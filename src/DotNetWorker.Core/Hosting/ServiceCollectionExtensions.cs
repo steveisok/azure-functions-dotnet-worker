@@ -127,7 +127,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void RunExtensionStartupCode(IFunctionsWorkerApplicationBuilder builder)
         {
-            var entryAssembly = Assembly.GetEntryAssembly()!;
+            string specEntryAsmName = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_SPECIALIZED_ENTRY_ASSEMBLY")!;
+
+            if (string.IsNullOrWhiteSpace(specEntryAsmName))
+            {
+                return;
+            }
+            
+            Assembly entryAssembly = Assembly.LoadFrom(specEntryAsmName);
 
             // Find the assembly attribute which has information about the startup code executor class
             var startupCodeExecutorInfoAttr = entryAssembly.GetCustomAttribute<WorkerExtensionStartupCodeExecutorInfoAttribute>();

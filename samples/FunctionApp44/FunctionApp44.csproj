@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AzureFunctionsVersion>v4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -10,13 +10,14 @@
     </PropertyGroup>
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.2-local202405010752" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.2-local202405101039" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.4-local202405101039" />
         <!--<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />-->
-        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.4-local202405010752" />
 
         <ProjectReference Include="..\..\extensions\Worker.Extensions.Http\src\Worker.Extensions.Http.csproj" />
 		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="1.1.0-local202405010752" />
+		<!--<PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="1.1.0-local202405010752" />-->
+        <ProjectReference Include="..\..\src\DotnetWorker.ApplicationInsights\DotnetWorker.ApplicationInsights.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">

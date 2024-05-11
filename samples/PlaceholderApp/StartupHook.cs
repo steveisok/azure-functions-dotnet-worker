@@ -39,6 +39,11 @@ internal class StartupHook
 
         string specEntryAsmName = SysEnv.GetEnvironmentVariable(SpecEntryAssemblyEnvVar);
 
+        LogMessage($"Inside hook: entry assembly name: {specEntryAsmName}");
+
+        /*
+        string specEntryAsmName = SysEnv.GetEnvironmentVariable(SpecEntryAssemblyEnvVar);
+
         if (string.IsNullOrWhiteSpace(specEntryAsmName))
         {
             return ;
@@ -46,6 +51,7 @@ internal class StartupHook
 
         Assembly specializedEntryAsm = Assembly.LoadFrom(specEntryAsmName);
         Assembly.SetEntryAssembly(specializedEntryAsm);
+        */
     }
 
     private static void LogMessage(string message)
@@ -108,7 +114,7 @@ internal class StartupHook
         var barrierEx = new System.Threading.BarrierPostPhaseException();
         var nInfoEx = new System.Net.NetworkInformation.NetworkInformationException();
         var authEx = new System.Security.Cryptography.AuthenticationTagMismatchException();
-        var taEx = new System.Threading.ThreadAbortException();
+        var taEx = new System.Threading.ThreadInterruptedException();
         
         // Same with ASP.NET Core types.
         var provider = new Microsoft.Extensions.Configuration.EnvironmentVariables.EnvironmentVariablesConfigurationProvider();
