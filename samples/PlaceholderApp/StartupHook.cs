@@ -26,8 +26,7 @@ internal class StartupHook
         //LogMessage($"{SysEnv.NewLine}Startup Hook Called!{SysEnv.NewLine}");
 
         string jitTraceFile = SysEnv.GetEnvironmentVariable(PrejitFileEnvVar);
-        //string jitTraceFile = "C:\\dev\\functions\\ArtifactsForProfileCollection\\FunctionsIvanHookPreJit\\PreJit\\coldstart.jittrace";
-
+        
         if (!string.IsNullOrWhiteSpace(jitTraceFile))
         {
             LogMessage($"{PrejitFileEnvVar} env was set. Will attempt to carry out"
@@ -38,8 +37,6 @@ internal class StartupHook
         s_waitHandle.WaitOne();
 
         string specEntryAsmName = SysEnv.GetEnvironmentVariable(SpecEntryAssemblyEnvVar);
-
-        LogMessage($"Inside hook: entry assembly name: {specEntryAsmName}");
 
         /*
         string specEntryAsmName = SysEnv.GetEnvironmentVariable(SpecEntryAssemblyEnvVar);
@@ -88,7 +85,8 @@ internal class StartupHook
         Assembly entryAssembly = Assembly.GetEntryAssembly();
         string version = System.Diagnostics.FileVersionInfo.GetVersionInfo(entryAssembly.Location).FileVersion;
 
-        var json = File.ReadAllText("C:\\dev\\functions\\ArtifactsForProfileCollection\\FunctionsHookPreJit\\HookApp\\function.deps.json");
+        var jsonPath = Path.Combine(Path.GetDirectoryName(entryAssembly.Location), Path.GetFileNameWithoutExtension(entryAssembly.Location) + ".deps.json");
+        var json = File.ReadAllText(jsonPath);
         var doc = JsonDocument.Parse(json);
         bool isParsed = Enum.TryParse<HookTypes>("One", out var hookType);
 
